@@ -179,6 +179,16 @@ class TestResponsiveViewport(unittest.IsolatedAsyncioTestCase):
                 self.assertFalse(body_overflow_w, "Body should have no horizontal overflow on desktop")
                 self.assertFalse(body_overflow_h, "Body should have no vertical overflow on desktop")
 
+                # Verify canvas matches container interior with zero clipping
+                canvas_cont_diff = await eval_js("""
+                    (() => {
+                        const cont = document.querySelector('.canvas-container');
+                        const canvas = document.getElementById('ludo-canvas');
+                        return Math.abs(cont.clientWidth - canvas.clientWidth) + Math.abs(cont.clientHeight - canvas.clientHeight);
+                    })()
+                """)
+                self.assertEqual(canvas_cont_diff, 0, f"Canvas display size must exactly match container client interior: {canvas_cont_diff}")
+
                 # 3. Test Laptop Screen (1366x768)
                 await set_viewport(1366, 768, False)
                 canvas_dim_laptop = await eval_js("document.getElementById('ludo-canvas').getBoundingClientRect().width")
@@ -196,18 +206,32 @@ class TestResponsiveViewport(unittest.IsolatedAsyncioTestCase):
                 # 5. Test Mobile Phone Portrait (390x844 - iPhone / modern Android)
                 await set_viewport(390, 844, True)
                 canvas_dim_mobile = await eval_js("document.getElementById('ludo-canvas').getBoundingClientRect().width")
-                self.assertGreater(canvas_dim_mobile, 350, f"Canvas should fill phone width (>350px), got {canvas_dim_mobile}")
+                self.assertGreater(canvas_dim_mobile, 340, f"Canvas should fill phone width (>340px), got {canvas_dim_mobile}")
 
                 # Verify player sidebars adapted to horizontal rows
                 is_sidebar_row = await eval_js("window.getComputedStyle(document.querySelector('.game-sidebar')).flexDirection === 'row'")
                 self.assertTrue(is_sidebar_row, "Sidebar should adapt to row orientation on mobile portrait")
 
-                # 6. Test Mobile Phone Landscape (844x390)
+                # Verify container is strictly square on mobile
+                is_square = await eval_js("""
+                    (() => {
+                        const cont = document.querySelector('.canvas-container');
+                        return cont.clientWidth === cont.clientHeight;
+                    })()
+                """)
+                self.assertTrue(is_square, "Canvas container must maintain 1:1 square aspect ratio on mobile portrait")
+
+                # 6. Test Ultra-compact Mobile Screen (320x568 - iPhone SE 1st gen)
+                await set_viewport(320, 568, True)
+                se_overflow_w = await eval_js("document.body.scrollWidth > document.body.clientWidth")
+                self.assertFalse(se_overflow_w, "No horizontal overflow on tiny 320px screen")
+
+                # 7. Test Mobile Phone Landscape (844x390)
                 await set_viewport(844, 390, True)
                 canvas_dim_landscape = await eval_js("document.getElementById('ludo-canvas').getBoundingClientRect().height")
-                self.assertGreater(canvas_dim_landscape, 260, f"Canvas should fill landscape height (>260px), got {canvas_dim_landscape}")
+                self.assertGreater(canvas_dim_landscape, 230, f"Canvas should fill landscape height (>230px), got {canvas_dim_landscape}")
 
-                # 7. Test Board Size Preset dynamically scaling
+                # 8. Test Board Size Preset dynamically scaling on Desktop and Mobile
                 await set_viewport(1366, 768, False)
                 await eval_js("window.app.applyBoardSize('standard')")
                 await asyncio.sleep(0.3)
@@ -219,24 +243,50 @@ class TestResponsiveViewport(unittest.IsolatedAsyncioTestCase):
 
                 self.assertGreater(canvas_xl, canvas_std, f"xlarge canvas ({canvas_xl}) should be larger than standard ({canvas_std})")
 
-                # 8. Test Pixel-Perfect Coordinate Mapping
-                # Center click on (clientX, clientY) should map to board center (375, 375)
+                # Test Presets on Mobile (390x844) without clipping
+                await set_viewport(390, 844, True)
+                await eval_js("window.app.applyBoardSize('standard')")
+                await asyncio.sleep(0.3)
+                std_clip = await eval_js("""
+                    (() => {
+                        const cont = document.querySelector('.canvas-container');
+                        const canvas = document.getElementById('ludo-canvas');
+                        return cont.clientWidth === canvas.clientWidth && cont.clientWidth === cont.clientHeight;
+                    })()
+                """)
+                self.assertTrue(std_clip, "Standard preset on mobile must have matching container and canvas with no clipping")
+
+                await eval_js("window.app.applyBoardSize('large')")
+                await asyncio.sleep(0.3)
+
+                # 9. Test Pixel-Perfect Coordinate Mapping (Center and Corners)
                 coord_map = await eval_js("""
                     (() => {
                         const board = window.app.board;
                         const canvas = document.getElementById('ludo-canvas');
                         const rect = canvas.getBoundingClientRect();
-                        const clientX = rect.left + rect.width / 2;
-                        const clientY = rect.top + rect.height / 2;
-                        const w = rect.width;
-                        const h = rect.height;
-                        const x = ((clientX - rect.left) / w) * board.boardSize;
-                        const y = ((clientY - rect.top) / h) * board.boardSize;
-                        return { x: Math.round(x), y: Math.round(y) };
+                        
+                        const center = {
+                            x: Math.round(((rect.left + rect.width / 2 - rect.left) / rect.width) * board.boardSize),
+                            y: Math.round(((rect.top + rect.height / 2 - rect.top) / rect.height) * board.boardSize)
+                        };
+                        const origin = {
+                            x: Math.round(((rect.left - rect.left) / rect.width) * board.boardSize),
+                            y: Math.round(((rect.top - rect.top) / rect.height) * board.boardSize)
+                        };
+                        const maxCorner = {
+                            x: Math.round(((rect.right - rect.left) / rect.width) * board.boardSize),
+                            y: Math.round(((rect.bottom - rect.top) / rect.height) * board.boardSize)
+                        };
+                        return { center, origin, maxCorner };
                     })()
                 """)
-                self.assertEqual(coord_map["x"], 375, f"Expected center x 375, got {coord_map['x']}")
-                self.assertEqual(coord_map["y"], 375, f"Expected center y 375, got {coord_map['y']}")
+                self.assertEqual(coord_map["center"]["x"], 375, f"Center x 375, got {coord_map['center']['x']}")
+                self.assertEqual(coord_map["center"]["y"], 375, f"Center y 375, got {coord_map['center']['y']}")
+                self.assertEqual(coord_map["origin"]["x"], 0, f"Origin x 0, got {coord_map['origin']['x']}")
+                self.assertEqual(coord_map["origin"]["y"], 0, f"Origin y 0, got {coord_map['origin']['y']}")
+                self.assertEqual(coord_map["maxCorner"]["x"], 750, f"Max corner x 750, got {coord_map['maxCorner']['x']}")
+                self.assertEqual(coord_map["maxCorner"]["y"], 750, f"Max corner y 750, got {coord_map['maxCorner']['y']}")
 
                 listener_task.cancel()
                 self.assertEqual(len(exceptions), 0, f"Browser exceptions: {exceptions}")

@@ -555,6 +555,7 @@ body {
 
 /* Dynamically Maximized Board Canvas Container */
 .canvas-container {
+    box-sizing: border-box;
     position: relative;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
     border-radius: 18px;
@@ -565,25 +566,17 @@ body {
     aspect-ratio: 1 / 1;
     max-width: 100%;
     max-height: 100%;
-    width: min(calc(100vw - 320px), calc(100dvh - 130px));
-    height: min(calc(100vw - 320px), calc(100dvh - 130px));
-    transition: width 0.2s ease, height 0.2s ease;
+    width: min(calc(100vw - 320px), calc(100dvh - 140px));
+    height: min(calc(100vw - 320px), calc(100dvh - 140px));
 }
 
-.canvas-container.size-standard {
-    max-width: 86%;
-    max-height: 86%;
-}
-
-.canvas-container.size-large {
-    max-width: 95%;
-    max-height: 95%;
-}
-
+.canvas-container.size-standard,
+.canvas-container.size-large,
 .canvas-container.size-xlarge {
-    max-width: 99%;
-    max-height: 99%;
+    max-width: 100%;
+    max-height: 100%;
 }
+
 
 #ludo-canvas {
     width: 100%;
@@ -1526,7 +1519,7 @@ body {
         max-width: 100%;
         justify-content: center;
         padding: 2px 4px;
-        gap: 5px;
+        gap: 4px;
         overflow-x: auto;
         overflow-y: hidden;
         flex-wrap: nowrap;
@@ -1540,40 +1533,59 @@ body {
 
     .player-hud-card {
         flex: 1 1 0;
-        min-width: 75px;
+        min-width: 0;
         max-width: 175px;
-        padding: 3px 6px;
-        gap: 5px;
+        padding: 3px 5px;
+        gap: 4px;
         border-radius: 8px;
         border-left-width: 4px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
     }
 
     .hud-avatar-wrap {
-        width: 26px;
-        height: 26px;
-        font-size: 15px;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .hud-info {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .hud-name {
         font-size: 11px;
-        max-width: 55px;
+        max-width: 50px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .hud-goal-counter {
         font-size: 9px;
+        white-space: nowrap;
     }
 
     .hud-mini-die {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         font-size: 11px;
+        flex-shrink: 0;
     }
 
     .btn-private-call {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         font-size: 10px;
+        flex-shrink: 0;
+    }
+
+    .hud-mic-indicator {
+        font-size: 11px;
+        flex-shrink: 0;
     }
 
     .game-arena {
@@ -1584,11 +1596,11 @@ body {
         min-width: 0;
     }
 
-    /* Canvas dynamically expands to fill available portrait width */
+    /* Canvas container dynamically adapts via JS bounding calculations */
     .canvas-container {
-        width: min(calc(100vw - 8px), calc(100dvh - 156px));
-        height: min(calc(100vw - 8px), calc(100dvh - 156px));
         border-radius: 14px;
+        max-width: 100%;
+        max-height: 100%;
     }
 
     .turn-banner {
@@ -1605,26 +1617,48 @@ body {
         height: 52px;
         padding: 0 8px;
         gap: 6px;
+        overflow: hidden;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .audio-toolbar {
+        gap: 4px;
+        flex-shrink: 0;
     }
 
     .voice-btn {
-        padding: 5px 8px;
+        padding: 4px 6px;
         font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .chat-quick-toolbar {
+        gap: 4px;
+        flex-shrink: 1;
+        min-width: 0;
     }
 
     .reaction-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 14px;
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
+        flex-shrink: 0;
     }
 
     .chat-input-wrap {
-        max-width: 110px;
+        max-width: 105px;
+        min-width: 0;
+        flex: 1 1 auto;
+        padding: 3px 6px;
     }
 
     .chat-input-wrap input {
         font-size: 11px;
-        padding: 4px 6px;
+        padding: 2px 4px;
+        width: 100%;
+        min-width: 0;
     }
 
     .chat-messages-container {
@@ -1719,11 +1753,11 @@ body {
         padding: 1px;
     }
 
-    /* Canvas dynamically expands to fill available landscape height */
+    /* Canvas container dynamically adapts via JS bounding calculations */
     .canvas-container {
-        width: min(calc(100vw - 250px), calc(100dvh - 88px));
-        height: min(calc(100vw - 250px), calc(100dvh - 88px));
         border-radius: 12px;
+        max-width: 100%;
+        max-height: 100%;
     }
 
     .turn-banner {
@@ -1739,25 +1773,46 @@ body {
     .game-bottom-bar {
         height: 44px;
         padding: 0 8px;
+        overflow: hidden;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .dice-wrapper {
         transform: scale(0.82);
     }
 
+    .chat-quick-toolbar {
+        gap: 4px;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
     .reaction-btn {
         width: 26px;
         height: 26px;
         font-size: 12px;
+        flex-shrink: 0;
     }
 
     .voice-btn {
         padding: 3px 6px;
         font-size: 10px;
+        flex-shrink: 0;
     }
 
     .chat-input-wrap {
         max-width: 95px;
+        min-width: 0;
+        flex: 1 1 auto;
+        padding: 2px 4px;
+    }
+
+    .chat-input-wrap input {
+        font-size: 10px;
+        width: 100%;
+        min-width: 0;
     }
 
     .game-updates-corner {
@@ -1774,6 +1829,64 @@ body {
         bottom: 4px;
         left: 4px;
         font-size: 9px;
+    }
+}
+
+/* 4. Ultra-compact viewports (<= 360px width, e.g. iPhone SE 1st gen, small Galaxy) */
+@media (max-width: 360px) {
+    .app-header {
+        height: 44px;
+        padding: 0 6px;
+    }
+    .brand-wrap {
+        gap: 4px;
+    }
+    .brand-title {
+        font-size: 14px;
+        letter-spacing: 0;
+    }
+    .brand-icon {
+        font-size: 18px;
+    }
+    .voice-status-badge {
+        display: none !important;
+    }
+    .header-controls {
+        gap: 4px;
+    }
+    .icon-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+    .btn-quit {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+    .game-bottom-bar {
+        height: 48px;
+        padding: 0 4px;
+        gap: 3px;
+    }
+    .voice-btn {
+        padding: 3px 4px;
+        font-size: 10px;
+    }
+    .chat-quick-toolbar {
+        gap: 3px;
+        flex-shrink: 0;
+    }
+    .reaction-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 13px;
+    }
+    .reaction-btn:nth-child(n+3) {
+        display: none;
+    }
+    .chat-input-wrap {
+        display: none;
     }
 }
 

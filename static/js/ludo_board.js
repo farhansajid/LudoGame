@@ -53,6 +53,7 @@ class LudoBoard {
 
     setTheme(themeName) {
         this.theme = themeName;
+        this.resize();
     }
 
     setSizePreset(preset) {
@@ -359,39 +360,52 @@ class LudoBoard {
                 availW = parentRect.width;
                 availH = parentRect.height;
             } else {
-                availW = Math.max(300, window.innerWidth - 320);
-                availH = Math.max(300, window.innerHeight - 140);
+                availW = Math.max(280, window.innerWidth - 320);
+                availH = Math.max(280, window.innerHeight - 140);
             }
         }
 
-        const minDim = Math.min(availW, availH);
+        // Account for arena padding so container never overflows arena bounds
+        let padX = 8;
+        let padY = 8;
+        if (arena && typeof window.getComputedStyle !== "undefined") {
+            const cs = window.getComputedStyle(arena);
+            padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+            padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+        }
+        const netW = Math.max(100, availW - padX);
+        const netH = Math.max(100, availH - padY);
+        const minDim = Math.min(netW, netH);
 
-        // Responsive scaling preset factors
+        // Responsive scaling factor based on size preset and viewport category
         let factor = 0.95;
         if (this.sizePreset === "standard") {
-            factor = 0.85;
+            factor = minDim < 600 ? 0.88 : 0.84;
         } else if (this.sizePreset === "xlarge") {
             factor = 0.99;
+        } else {
+            // large (default)
+            factor = minDim < 600 ? 0.96 : 0.95;
         }
 
-        // On compact viewports (mobile, small tablets), maximize available space
-        if (minDim < 640) {
-            factor = Math.max(factor, 0.98);
-        }
+        const targetDim = Math.max(120, Math.floor(minDim * factor));
 
-        const margin = minDim < 600 ? 4 : 10;
-        const targetDim = Math.max(120, Math.floor((minDim - margin) * factor));
-
+        // Set outer container dimensions (guaranteed 100% square)
         container.style.width = `${targetDim}px`;
         container.style.height = `${targetDim}px`;
 
-        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-        this.canvas.width = Math.round(targetDim * dpr);
-        this.canvas.height = Math.round(targetDim * dpr);
-        this.canvas.style.width = `${targetDim}px`;
-        this.canvas.style.height = `${targetDim}px`;
+        // The actual inner drawing area inside container theme border/padding
+        const innerW = container.clientWidth || targetDim;
+        const innerH = container.clientHeight || targetDim;
+        const boardDim = Math.min(innerW, innerH);
 
-        this.scale = (targetDim * dpr) / this.boardSize;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        this.canvas.width = Math.round(boardDim * dpr);
+        this.canvas.height = Math.round(boardDim * dpr);
+        this.canvas.style.width = `${boardDim}px`;
+        this.canvas.style.height = `${boardDim}px`;
+
+        this.scale = (boardDim * dpr) / this.boardSize;
         this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
     }
 
@@ -431,8 +445,8 @@ class LudoBoard {
             const hasTouch = Boolean(e.touches && e.touches.length > 0);
             const clientX = hasTouch ? e.touches[0].clientX : (e.clientX !== undefined ? e.clientX : 0);
             const clientY = hasTouch ? e.touches[0].clientY : (e.clientY !== undefined ? e.clientY : 0);
-            const x = ((clientX - rect.left) / w) * this.boardSize;
-            const y = ((clientY - rect.top) / h) * this.boardSize;
+            const x = Math.max(0, Math.min(this.boardSize, ((clientX - rect.left) / w) * this.boardSize));
+            const y = Math.max(0, Math.min(this.boardSize, ((clientY - rect.top) / h) * this.boardSize));
             return { x, y };
         };
 
