@@ -1,0 +1,17 @@
+{
+  "appId": "com.royalludo.app",
+  "appName": "Royal Ludo",
+  "webDir": "static",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": [
+      "*"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

@@ -1,0 +1,16 @@
+# Render Blueprint Specification for Royal Ludo
+# Web Service with Python 3.11, WebSocket support, and health checks
+services:
+  - type: web
+    name: royal-ludo
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py --host 0.0.0.0 --no-browser
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: RENDER
+        value: "true"

@@ -1,0 +1,25 @@
+{
+  "name": "royal-ludo",
+  "version": "1.0.0",
+  "description": "Royal Ludo multiplayer and real-time audio calling game",
+  "main": "main.py",
+  "scripts": {
+    "start": "python main.py",
+    "android:build": "cd android && .\\gradlew.bat assembleDebug",
+    "android:release": "cd android && .\\gradlew.bat bundleRelease"
+  },
+  "keywords": [
+    "ludo",
+    "multiplayer",
+    "webrtc",
+    "capacitor",
+    "android"
+  ],
+  "author": "farhansajid",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

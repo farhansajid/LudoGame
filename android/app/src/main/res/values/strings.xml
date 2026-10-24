@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Royal Ludo</string>
+    <string name="title_activity_main">Royal Ludo</string>
+    <string name="package_name">com.royalludo.app</string>
+    <string name="custom_url_scheme">com.royalludo.app</string>
+    <string name="mic_permission_rationale">Royal Ludo requires microphone access for in-game real-time voice chat with your match opponents.</string>
+</resources>

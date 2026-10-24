@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Royal Ludo - Real-Time Audio Calling & Multiplayer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/themes.css">
+
+</head>
+<body class="theme-wood">
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="brand-wrap">
+            <span class="brand-icon">🎲</span>
+            <span class="brand-title">ROYAL LUDO</span>
+            <span class="brand-tag">HD + VOICE</span>
+        </div>
+        <div class="header-controls">
+            <div id="voice-status-badge" class="voice-status-badge">
+                <span class="voice-dot"></span> Voice Idle
+            </div>
+            <button id="btn-toggle-updates" class="icon-btn" title="Toggle Game Updates Stream">📜</button>
+            <button id="btn-open-settings" class="icon-btn" title="Settings & Themes">⚙️</button>
+            <button id="btn-quit-game" class="btn-quit" title="Quit match and return to menu" style="display: none;">🚪 Quit</button>
+        </div>
+    </header>
+
+    <!-- MAIN SCREENS CONTAINER -->
+    <main class="main-content">
+
+        <!-- 1. HOME SCREEN -->
+        <section id="screen-home" class="screen active">
+            <div class="home-container">
+                <div class="home-hero">
+                    <h1>Royal Ludo Championship</h1>
+                    <p>Classic strategy board game with real-time local audio calling and exquisite 3D graphics.</p>
+                    <div class="lan-ip-badge">
+                        <span>Local LAN URL: </span><strong id="lan-ip-display">Detecting...</strong>
+                    </div>
+
+                    <!-- Player Count Selector -->
+                    <div class="player-count-picker">
+                        <span class="picker-label">Match Format:</span>
+                        <div class="count-buttons" id="count-buttons">
+                            <button class="count-btn" data-count="2" id="btn-format-2">⚔️ 2 Players (Duel)</button>
+                            <button class="count-btn" data-count="3" id="btn-format-3">🎯 3 Players</button>
+                            <button class="count-btn active" data-count="4" id="btn-format-4">👑 4 Players (Classic)</button>
+                            <button class="count-btn" data-count="6" id="btn-format-6">⚡ 6 Players (Hexagon)</button>
+                            <button class="count-btn" data-count="8" id="btn-format-8">🌌 8 Players (Octagon)</button>
+                            <button class="count-btn" data-count="team" id="btn-format-team">🤝 2v2 Teamwork [Preview]</button>
+                        </div>
+                    </div>
+
+                    <!-- Dice Mode Selector (1 Die vs 2 Dice) -->
+                    <div class="rule-picker-wrap">
+                        <span class="picker-label">Dice Roll Mode:</span>
+                        <div class="rule-buttons" id="dice-mode-buttons">
+                            <button class="rule-btn active" id="btn-dice-single" data-dice="1">
+                                🎲 1 Die (Classic)
+                            </button>
+                            <button class="rule-btn" id="btn-dice-double" data-dice="2">
+                                🎲🎲 2 Dice (Choose Die to Step)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Opening Rule Selector (Boost) -->
+                    <div class="rule-picker-wrap">
+                        <span class="picker-label">Yard Opening Rule:</span>
+                        <div class="rule-buttons" id="rule-buttons">
+                            <button class="rule-btn active" id="btn-rule-fast" data-open="1and6">
+                                ⚡ Fast Boost (Roll 1 or 6)
+                            </button>
+                            <button class="rule-btn" id="btn-rule-classic" data-open="6only">
+                                🎯 Classic (Roll 6 Only)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Choose Your Color -->
+                    <div class="rule-picker-wrap">
+
+                        <span class="picker-label">Choose Your Color:</span>
+                        <div class="color-picker-buttons" id="home-color-picker">
+                            <button class="color-select-btn active" data-color="red" style="--btn-color: #d32f2f;">🔴 Red</button>
+                            <button class="color-select-btn" data-color="green" style="--btn-color: #2e7d32;">🟢 Green</button>
+                            <button class="color-select-btn" data-color="yellow" style="--btn-color: #f9a825;">🟡 Yellow</button>
+                            <button class="color-select-btn" data-color="blue" style="--btn-color: #1976d2;">🔵 Blue</button>
+                            <button class="color-select-btn" data-color="orange" style="--btn-color: #e65100; display: none;">🟠 Orange</button>
+                            <button class="color-select-btn" data-color="purple" style="--btn-color: #6a1b9a; display: none;">🟣 Purple</button>
+                            <button class="color-select-btn" data-color="cyan" style="--btn-color: #00838f; display: none;">🔷 Cyan</button>
+                            <button class="color-select-btn" data-color="pink" style="--btn-color: #ad1457; display: none;">🌸 Pink</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Difficulty Level Selector -->
+                    <div class="rule-picker-wrap">
+                        <span class="picker-label">AI Difficulty Level:</span>
+                        <div class="rule-buttons" id="difficulty-buttons">
+                            <button class="rule-btn" id="btn-diff-easy" data-diff="easy">
+                                🟢 Easy (Casual)
+                            </button>
+                            <button class="rule-btn" id="btn-diff-medium" data-diff="medium">
+                                🟡 Medium (Standard)
+                            </button>
+                            <button class="rule-btn active" id="btn-diff-hard" data-diff="hard">
+                                🔴 Hard (Master AI)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modes-grid">
+                    <!-- Mode 1: AI Bots -->
+                    <div class="mode-card" id="btn-mode-bot">
+                        <div class="mode-icon">🤖</div>
+                        <h3>Play vs Smart AI</h3>
+                        <p>Solo match against intelligent heuristic bot opponents.</p>
+                    </div>
+
+                    <!-- Mode 2: Local Pass & Play -->
+                    <div class="mode-card" id="btn-mode-local">
+                        <div class="mode-icon">👥</div>
+                        <h3>Pass & Play</h3>
+                        <p>Hotseat multiplayer on this computer for friends and family.</p>
+                    </div>
+
+                    <!-- Mode 3: Host LAN Voice Game -->
+                    <div class="mode-card" id="btn-mode-host">
+                        <div class="mode-icon">🎙️</div>
+                        <h3>Host Voice Room</h3>
+                        <p>Create a game room with real-time peer-to-peer audio calling.</p>
+                    </div>
+
+                    <!-- Mode 4: Join Game -->
+                    <div class="mode-card" id="btn-mode-join">
+                        <div class="mode-icon">🔑</div>
+                        <h3>Join Game Code</h3>
+                        <p>Join a room on this PC or local Wi-Fi network using room code.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. LOBBY SCREEN -->
+        <section id="screen-lobby" class="screen">
+            <div class="lobby-container">
+                <h2>Game Room Lobby</h2>
+                <div class="room-code-badge">
+                    <span>Room: <strong id="lobby-room-code">LUDO-XXXX</strong></span>
+                    <button id="btn-copy-room-link" class="icon-btn" title="Copy Room Code">📋</button>
+                </div>
+                <div class="lobby-rules-badge" id="lobby-rules-badge">
+                    <span>Opening Rule: <strong id="lobby-rules-text">⚡ Fast Boost (1 or 6)</strong></span>
+                </div>
+                <div class="lobby-format-badge" id="lobby-format-badge">
+                    <span>Format: <strong id="lobby-format-text">👑 4 Players (Classic)</strong></span>
+                </div>
+                <div class="lobby-rules-badge" id="lobby-dice-badge">
+                    <span>Dice Mode: <strong id="lobby-dice-text">🎲 1 Die (Classic)</strong></span>
+                </div>
+                <div class="lobby-rules-badge" id="lobby-diff-badge">
+                    <span>AI Difficulty: <strong id="lobby-diff-text">🔴 Hard (Master AI)</strong></span>
+                </div>
+
+                <div class="lobby-color-picker-wrap" id="lobby-color-picker-wrap">
+                    <span style="font-size: 13px; color: #a0aec0; margin-bottom: 6px; display: block;">Your Selected Color (Click to switch):</span>
+                    <div class="color-picker-buttons" id="lobby-color-picker">
+                        <button class="color-select-btn" data-color="red" style="--btn-color: #d32f2f;">🔴 Red</button>
+                        <button class="color-select-btn" data-color="green" style="--btn-color: #2e7d32;">🟢 Green</button>
+                        <button class="color-select-btn" data-color="yellow" style="--btn-color: #f9a825;">🟡 Yellow</button>
+                        <button class="color-select-btn" data-color="blue" style="--btn-color: #1976d2;">🔵 Blue</button>
+                        <button class="color-select-btn" data-color="orange" style="--btn-color: #e65100; display: none;">🟠 Orange</button>
+                        <button class="color-select-btn" data-color="purple" style="--btn-color: #6a1b9a; display: none;">🟣 Purple</button>
+                        <button class="color-select-btn" data-color="cyan" style="--btn-color: #00838f; display: none;">🔷 Cyan</button>
+                        <button class="color-select-btn" data-color="pink" style="--btn-color: #ad1457; display: none;">🌸 Pink</button>
+                    </div>
+                </div>
+
+                <div class="lobby-players-list" id="lobby-players-list">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="lobby-actions">
+                    <button id="btn-start-game" class="btn-primary">Start Game</button>
+                    <button id="btn-leave-room" class="btn-secondary">Leave Room</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. GAME SCREEN -->
+        <section id="screen-game" class="screen">
+            <div class="game-layout">
+
+                <!-- Left Players Sidebar (Red, Blue, Orange, Cyan) -->
+                <aside class="game-sidebar">
+                    <!-- Red Player Card -->
+                    <div class="player-hud-card color-red" id="player-card-red">
+                        <div class="hud-avatar-wrap" id="hud-avatar-red">🦁</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Red</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-red" title="Red's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="red" id="btn-call-red" title="Call Red Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Blue Player Card -->
+                    <div class="player-hud-card color-blue" id="player-card-blue">
+                        <div class="hud-avatar-wrap" id="hud-avatar-blue">🐻</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Blue</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-blue" title="Blue's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="blue" id="btn-call-blue" title="Call Blue Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Orange Player Card (6 & 8 players) -->
+                    <div class="player-hud-card color-orange" id="player-card-orange" style="display: none;">
+                        <div class="hud-avatar-wrap" id="hud-avatar-orange">🐯</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Orange</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-orange" title="Orange's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="orange" id="btn-call-orange" title="Call Orange Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Cyan Player Card (8 players) -->
+                    <div class="player-hud-card color-cyan" id="player-card-cyan" style="display: none;">
+                        <div class="hud-avatar-wrap" id="hud-avatar-cyan">🦅</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Cyan</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-cyan" title="Cyan's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="cyan" id="btn-call-cyan" title="Call Cyan Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+                </aside>
+
+                <!-- Center Game Arena -->
+                <div class="game-arena">
+                    <!-- Teamwork Scoreboard Banner (2v2 mode) -->
+                    <div id="team-scoreboard" class="team-scoreboard" style="display: none;">
+                        <div class="team-score-card team-alpha">
+                            <span class="team-dot" style="background:#ffd700;"></span>
+                            <span class="team-label">Team Alpha (🔴+🟡):</span>
+                            <strong id="score-team-alpha">0/8</strong>
+                        </div>
+                        <div class="team-vs-pill">VS</div>
+                        <div class="team-score-card team-bravo">
+                            <span class="team-dot" style="background:#00f0ff;"></span>
+                            <span class="team-label">Team Bravo (🟢+🔵):</span>
+                            <strong id="score-team-bravo">0/8</strong>
+                        </div>
+                    </div>
+
+                    <!-- Center Turn Announcement Banner -->
+                    <div id="turn-banner" class="turn-banner color-red center-turn-banner">
+                        <div class="turn-center-content">
+                            <span class="turn-icon" id="turn-icon">🎲</span>
+                            <span id="turn-text">Your Turn! Roll the Dice</span>
+                        </div>
+                        <div class="turn-timer-bar-wrap">
+                            <div class="turn-timer-bar" id="turn-timer-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Left Corner Game Updates Container -->
+                    <div id="game-updates-corner" class="game-updates-corner">
+                        <div class="updates-header">
+                            <div class="updates-title-wrap">
+                                <span class="updates-icon">📜</span>
+                                <span class="updates-title">Game Updates</span>
+                            </div>
+                            <div class="updates-controls">
+                                <button id="btn-updates-toggle-corner" class="updates-toggle-btn active" title="Toggle Game Updates">ON</button>
+                            </div>
+                        </div>
+                        <div id="game-updates-stream" class="game-updates-stream">
+                            <div class="update-entry system">🎲 Match started. Best of luck!</div>
+                        </div>
+                    </div>
+
+                    <!-- 1-on-1 Private Call Active Indicator in Arena -->
+                    <div id="private-call-banner" class="private-call-banner" style="display: none;">
+                        <span class="pulse-call-dot"></span>
+                        <span id="private-call-status-text">🔒 In Private Call</span>
+                        <button id="btn-end-private-call" class="btn-end-call">End Call</button>
+                    </div>
+
+                    <!-- Canvas Board -->
+                    <div class="canvas-container">
+                        <canvas id="ludo-canvas"></canvas>
+                        <div class="floating-reactions-layer" id="floating-reactions"></div>
+                        <div id="chat-messages" class="chat-messages-container"></div>
+                    </div>
+                </div>
+
+                <!-- Right Players Sidebar (Green, Yellow, Purple, Pink) -->
+                <aside class="game-sidebar">
+                    <!-- Green Player Card -->
+                    <div class="player-hud-card color-green" id="player-card-green">
+                        <div class="hud-avatar-wrap" id="hud-avatar-green">🦊</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Green</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-green" title="Green's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="green" id="btn-call-green" title="Call Green Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Yellow Player Card -->
+                    <div class="player-hud-card color-yellow" id="player-card-yellow">
+                        <div class="hud-avatar-wrap" id="hud-avatar-yellow">🐲</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Yellow</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-yellow" title="Yellow's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="yellow" id="btn-call-yellow" title="Call Yellow Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Purple Player Card (6 & 8 players) -->
+                    <div class="player-hud-card color-purple" id="player-card-purple" style="display: none;">
+                        <div class="hud-avatar-wrap" id="hud-avatar-purple">🐺</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Purple</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-purple" title="Purple's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="purple" id="btn-call-purple" title="Call Purple Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+
+                    <!-- Pink Player Card (8 players) -->
+                    <div class="player-hud-card color-pink" id="player-card-pink" style="display: none;">
+                        <div class="hud-avatar-wrap" id="hud-avatar-pink">🦩</div>
+                        <div class="hud-info">
+                            <div class="hud-name">Pink</div>
+                            <div class="hud-goal-counter">Goal: 0/4</div>
+                        </div>
+                        <div class="player-hud-dice" id="player-dice-pink" title="Pink's Personal Dice"></div>
+                        <button class="btn-private-call" data-color="pink" id="btn-call-pink" title="Call Pink Privately">📞</button>
+                        <div class="hud-mic-indicator">🎙️</div>
+                    </div>
+                </aside>
+
+            </div>
+
+            <!-- Bottom Action & Audio Bar -->
+            <footer class="game-bottom-bar">
+                <!-- Audio Controls -->
+                <div class="audio-toolbar">
+                    <button id="btn-mic-toggle" class="voice-btn active">
+                        <span>🎙️</span> Mic On
+                    </button>
+                    <button id="btn-deafen-toggle" class="voice-btn">
+                        <span>🎧</span> Audio
+                    </button>
+                    <button id="btn-audio-settings" class="icon-btn" title="Audio Call Settings">
+                        🎙️
+                    </button>
+                </div>
+
+                <!-- 3D Dice Roller -->
+                <div class="dice-container-wrap">
+                    <button id="btn-use-both-dice" class="btn-use-both-dice" style="display: none;">🎲🎲 Use Both Dice (Sum: <span id="dice-sum-val">--</span>)</button>
+                    <button id="btn-pass-turn" class="btn-pass-turn" style="display: none;">Pass Turn ⏭️</button>
+                    <div id="dice-container"></div>
+                </div>
+
+                <!-- Chat & Reactions -->
+                <div class="chat-quick-toolbar">
+                    <button class="reaction-btn" title="Laugh">😂</button>
+                    <button class="reaction-btn" title="Celebrate">🎉</button>
+                    <button class="reaction-btn" title="Fire">🔥</button>
+                    <button class="reaction-btn" title="Crown">👑</button>
+                    <div class="chat-input-wrap">
+                        <input type="text" id="chat-input" placeholder="Say something..." maxlength="120">
+                        <button id="btn-chat-send">➤</button>
+                    </div>
+                </div>
+            </footer>
+        </section>
+
+    </main>
+
+    <!-- MODAL: Audio Calling Settings -->
+    <div class="modal-overlay" id="modal-audio">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Voice Calling Settings</h3>
+                <button class="modal-close" id="btn-close-audio">✕</button>
+            </div>
+
+            <div class="audio-settings-body">
+                <p style="color: #a0aec0; font-size: 13px; margin-bottom: 14px;">
+                    Real-time local voice calling supports both Conference (all players) and Individual (1-on-1 private) calls.
+                </p>
+
+                <!-- Call Mode Toggle -->
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Call Mode</label>
+                    <div class="rule-buttons" id="audio-call-mode-buttons">
+                        <button class="rule-btn active" id="btn-call-mode-conf" data-mode="conference">🌐 Conference (All)</button>
+                        <button class="rule-btn" id="btn-call-mode-indiv" data-mode="individual">🔒 1-on-1 Individual</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <button id="btn-test-mic" class="btn-secondary" style="width: 100%;">
+                        Test Microphone (Hear Yourself)
+                    </button>
+                    <div class="mic-meter-wrap" style="margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: #a0aec0;">
+                            <span>Microphone Level:</span>
+                            <span id="mic-meter-text">0%</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden;">
+                            <div id="mic-test-meter-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #00ff88, #ffd700, #ff3366); transition: width 0.08s ease; border-radius: 6px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <label for="audio-ptt-checkbox" style="font-size: 14px;">Push to Talk (Hold Space or T)</label>
+                    <input type="checkbox" id="audio-ptt-checkbox">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                        <span>Master Voice Volume</span>
+                    </div>
+                    <input type="range" id="master-voice-slider" min="0" max="200" value="100" style="width: 100%;">
+                </div>
+
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 8px;">Participant Calls & Volumes</h4>
+                    <div id="audio-peers-list" style="display: flex; flex-direction: column; gap: 8px;">
+                        <span style="font-size: 12px; color: #888;">No other participants in call yet.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Settings & Themes -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Settings & Themes</h3>
+                <button class="modal-close" id="btn-close-settings">✕</button>
+            </div>
+
+            <div class="settings-body">
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Your Name</label>
+                    <input type="text" id="profile-name-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.08); color: white;">
+                </div>
+
+                <!-- Board Size Selector -->
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Board Size</label>
+                    <div class="rule-buttons" id="board-size-buttons">
+                        <button class="rule-btn" data-size="standard">Standard</button>
+                        <button class="rule-btn active" data-size="large">Large (HD)</button>
+                        <button class="rule-btn" data-size="xlarge">Extra Large (Arena)</button>
+                    </div>
+                </div>
+
+                <!-- Live Game Updates in Left Corner Toggle -->
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Game Updates Stream</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600;">📜 Updates in Left Corner</div>
+                            <div style="font-size: 12px; color: #a0aec0;">Show live game events, rolls, captures, and bonus turns</div>
+                        </div>
+                        <input type="checkbox" id="setting-game-updates-toggle" checked style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                </div>
+
+                <!-- AI Difficulty Selector -->
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">AI Difficulty Level</label>
+                    <div class="rule-buttons" id="setting-difficulty-buttons">
+                        <button class="rule-btn" data-diff="easy">🟢 Easy</button>
+                        <button class="rule-btn" data-diff="medium">🟡 Medium</button>
+                        <button class="rule-btn active" data-diff="hard">🔴 Hard</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Opening Rule (Fast Boost)</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600;">⚡ Open on 1 & 6</div>
+                            <div style="font-size: 12px; color: #a0aec0;">Release pawns on rolling 1 or 6 (Fast Action)</div>
+                        </div>
+                        <input type="checkbox" id="setting-open-one-toggle" checked style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Teamwork Mode (2v2)</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600;">🤝 2v2 Teamwork [Preview]</div>
+                            <div style="font-size: 12px; color: #a0aec0;">Red+Yellow vs Green+Blue partnership rules</div>
+                        </div>
+                        <input type="checkbox" id="setting-team-mode-toggle" style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Dice Mode (Roll 2 Dice)</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600;">🎲🎲 2 Dice Mode</div>
+                            <div style="font-size: 12px; color: #a0aec0;">Roll two dice and choose which die value to step with or use both</div>
+                        </div>
+                        <input type="checkbox" id="setting-twodice-toggle" style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px;">Gameplay Automation</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600;">⏩ Auto-Move Single Choice</div>
+                            <div style="font-size: 12px; color: #a0aec0;">Instantly move pawn if only 1 move is legal</div>
+                        </div>
+                        <input type="checkbox" id="setting-automove-toggle" checked style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                        <span>Game SFX Volume</span>
+                        <span id="setting-sfx-val">70%</span>
+                    </div>
+                    <input type="range" id="setting-sfx-slider" min="0" max="100" value="70" style="width: 100%;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; margin-bottom: 8px;">Board Theme</label>
+                    <div class="theme-options-grid">
+                        <div class="theme-option selected" data-theme="wood">
+                            🪵 Royal Wood
+                        </div>
+                        <div class="theme-option" data-theme="cyber">
+                            ⚡ Cyber Neon
+                        </div>
+                        <div class="theme-option" data-theme="emerald">
+                            💎 Emerald Luxury
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Quit Match Confirmation -->
+    <div class="modal-overlay" id="modal-quit">
+        <div class="modal-box" style="text-align: center; max-width: 400px;">
+            <div style="font-size: 42px; margin-bottom: 10px;">🚪</div>
+            <h3>Quit Current Game?</h3>
+            <p style="color: #a0aec0; font-size: 14px; margin: 12px 0 20px;">
+                Are you sure you want to quit this match? If playing with others, an AI bot will seamlessly take over your seat.
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button id="btn-confirm-quit" class="btn-primary" style="background: linear-gradient(135deg, #ff3366, #c2185b); flex: 1;">Yes, Quit</button>
+                <button id="btn-cancel-quit" class="btn-secondary" style="flex: 1;">Keep Playing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Incoming 1-on-1 Private Call -->
+    <div class="modal-overlay" id="modal-incoming-call">
+        <div class="modal-box" style="text-align: center; max-width: 380px;">
+            <div style="font-size: 44px; margin-bottom: 10px;">📞</div>
+            <h3 id="incoming-caller-title">Incoming Private Call</h3>
+            <p id="incoming-caller-desc" style="color: #a0aec0; font-size: 14px; margin: 12px 0 20px;">
+                Player wants to start a 1-on-1 private voice call with you.
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button id="btn-accept-call" class="btn-primary" style="background: linear-gradient(135deg, #00ff88, #00b0ff); flex: 1;">Accept Call</button>
+                <button id="btn-decline-call" class="btn-secondary" style="flex: 1;">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Victory Podium -->
+    <div class="modal-overlay" id="modal-victory">
+        <div class="modal-box" style="text-align: center;">
+            <h2>🏆 Match Finished! 🏆</h2>
+            <p style="color: #a0aec0; font-size: 14px;">Congratulations to the winners!</p>
+
+            <div class="victory-podium" id="victory-podium">
+                <!-- Dynamically filled podium -->
+            </div>
+
+            <button id="btn-victory-rematch" class="btn-primary" style="width: 100%;">Play Rematch</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/sound_engine.js"></script>
+    <script src="/static/js/audio_system.js"></script>
+    <script src="/static/js/dice_roller.js"></script>
+    <script src="/static/js/ludo_board.js"></script>
+    <script src="/static/js/network_client.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

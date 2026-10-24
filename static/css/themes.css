@@ -1,0 +1,61 @@
+/*
+ * Theme Customizations
+ * 1. Royal Mahogany Wood & Gold
+ * 2. Cyberpunk Neon
+ * 3. Emerald & Diamond Luxury Marble
+ */
+
+/* 1. Royal Mahogany Wood */
+body.theme-wood {
+    --bg-gradient: radial-gradient(circle at 50% 30%, #30190d 0%, #150a04 100%);
+    --panel-bg: rgba(40, 20, 10, 0.78);
+    --panel-border: rgba(218, 165, 32, 0.3);
+    --accent-gold: #ffd700;
+}
+
+body.theme-wood .app-header {
+    background: rgba(25, 12, 6, 0.9);
+    border-bottom: 1px solid rgba(218, 165, 32, 0.25);
+}
+
+body.theme-wood .canvas-container {
+    border: 6px solid #4a2411;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+/* 2. Cyberpunk Neon */
+body.theme-cyber {
+    --bg-gradient: radial-gradient(circle at 50% 25%, #0e1224 0%, #05070e 100%);
+    --panel-bg: rgba(14, 20, 40, 0.82);
+    --panel-border: rgba(0, 240, 255, 0.25);
+    --accent-gold: #00f0ff;
+}
+
+body.theme-cyber .app-header {
+    background: rgba(6, 9, 20, 0.9);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+body.theme-cyber .canvas-container {
+    border: 3px solid #00f0ff;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
+}
+
+body.theme-cyber .btn-primary {
+    background: linear-gradient(135deg, #00f0ff, #7928ca);
+    color: #ffffff;
+    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.4);
+}
+
+/* 3. Emerald & Diamond Luxury */
+body.theme-emerald {
+    --bg-gradient: radial-gradient(circle at 50% 20%, #143526 0%, #071710 100%);
+    --panel-bg: rgba(16, 44, 32, 0.8);
+    --panel-border: rgba(80, 200, 140, 0.3);
+    --accent-gold: #50c888;
+}
+
+body.theme-emerald .canvas-container {
+    border: 4px solid #50c888;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
+}
