@@ -153,6 +153,9 @@ class LudoApp {
             this.moveToken(tokenId);
         });
         this.board.setTheme(this.theme);
+        if (this.boardSize && typeof this.board.setSizePreset === "function") {
+            this.board.setSizePreset(this.boardSize);
+        }
 
         // Connect audio system to network client
         window.audioSystem.setNetworkClient(this.net);
@@ -1064,6 +1067,21 @@ class LudoApp {
         });
         const target = document.getElementById(screenId);
         if (target) target.classList.add("active");
+
+        if (screenId === "screen-game") {
+            requestAnimationFrame(() => {
+                if (this.board && typeof this.board.resize === "function") {
+                    this.board.resize();
+                } else {
+                    window.dispatchEvent(new Event("resize"));
+                }
+            });
+            setTimeout(() => {
+                if (this.board && typeof this.board.resize === "function") {
+                    this.board.resize();
+                }
+            }, 60);
+        }
     }
 
     _updateLobbyUI() {
@@ -1151,6 +1169,9 @@ class LudoApp {
             ? this.gameState.valid_moves : [];
 
         this.board.updateState(this.gameState, validMoves);
+        if (this.board && this.board.canvas && (this.board.canvas.width === 0 || this.board.canvas.height === 0)) {
+            this.board.resize();
+        }
 
         // Update Team Scoreboard in 2v2 mode
         const teamScoreboard = document.getElementById("team-scoreboard");
@@ -1769,6 +1790,10 @@ class LudoApp {
         document.querySelectorAll("#board-size-buttons .rule-btn").forEach(btn => {
             btn.classList.toggle("active", btn.dataset.size === targetSize);
         });
+
+        if (this.board && typeof this.board.setSizePreset === "function") {
+            this.board.setSizePreset(targetSize);
+        }
 
         // Trigger canvas resize immediately and after transition completes
         setTimeout(() => {

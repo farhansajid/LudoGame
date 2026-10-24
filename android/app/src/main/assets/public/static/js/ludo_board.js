@@ -23,6 +23,7 @@ class LudoBoard {
         this.boardSize = 750; // virtual resolution
         this.cellSize = this.boardSize / 15;
         this.boardType = 4; // 4, 6, or 8
+        this.sizePreset = "large"; // "standard", "large", "xlarge"
 
         // Current game state
         this.gameState = null;
@@ -52,6 +53,11 @@ class LudoBoard {
 
     setTheme(themeName) {
         this.theme = themeName;
+    }
+
+    setSizePreset(preset) {
+        this.sizePreset = preset || "large";
+        this.resize();
     }
 
     _initCoordinates(boardType = 4) {
@@ -329,23 +335,92 @@ class LudoBoard {
         }
     }
 
+    resize() {
+        const arena = this.canvas.closest(".game-arena");
+        const container = this.canvas.parentElement;
+        if (!container) return;
+
+        let availW = 0;
+        let availH = 0;
+
+        if (arena) {
+            availW = arena.clientWidth;
+            availH = arena.clientHeight;
+            if (!availW || !availH) {
+                const rect = arena.getBoundingClientRect();
+                availW = rect.width;
+                availH = rect.height;
+            }
+        }
+
+        if (!availW || !availH) {
+            const parentRect = container.parentElement ? container.parentElement.getBoundingClientRect() : null;
+            if (parentRect && parentRect.width > 0 && parentRect.height > 0) {
+                availW = parentRect.width;
+                availH = parentRect.height;
+            } else {
+                availW = Math.max(300, window.innerWidth - 320);
+                availH = Math.max(300, window.innerHeight - 140);
+            }
+        }
+
+        const minDim = Math.min(availW, availH);
+
+        // Responsive scaling preset factors
+        let factor = 0.95;
+        if (this.sizePreset === "standard") {
+            factor = 0.85;
+        } else if (this.sizePreset === "xlarge") {
+            factor = 0.99;
+        }
+
+        // On compact viewports (mobile, small tablets), maximize available space
+        if (minDim < 640) {
+            factor = Math.max(factor, 0.98);
+        }
+
+        const margin = minDim < 600 ? 4 : 10;
+        const targetDim = Math.max(120, Math.floor((minDim - margin) * factor));
+
+        container.style.width = `${targetDim}px`;
+        container.style.height = `${targetDim}px`;
+
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        this.canvas.width = Math.round(targetDim * dpr);
+        this.canvas.height = Math.round(targetDim * dpr);
+        this.canvas.style.width = `${targetDim}px`;
+        this.canvas.style.height = `${targetDim}px`;
+
+        this.scale = (targetDim * dpr) / this.boardSize;
+        this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+    }
+
     _setupResize() {
-        const resize = () => {
-            const rect = this.canvas.parentElement.getBoundingClientRect();
-            const minDim = Math.min(rect.width, rect.height) || 600;
-            const dpr = window.devicePixelRatio || 1;
-
-            this.canvas.width = minDim * dpr;
-            this.canvas.height = minDim * dpr;
-            this.canvas.style.width = `${minDim}px`;
-            this.canvas.style.height = `${minDim}px`;
-
-            this.scale = (minDim * dpr) / this.boardSize;
-            this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+        const debouncedResize = () => {
+            if (this._resizeRaf) cancelAnimationFrame(this._resizeRaf);
+            this._resizeRaf = requestAnimationFrame(() => {
+                this.resize();
+            });
         };
 
-        window.addEventListener("resize", resize);
-        setTimeout(resize, 50);
+        window.addEventListener("resize", debouncedResize);
+        window.addEventListener("orientationchange", () => {
+            setTimeout(debouncedResize, 80);
+            setTimeout(debouncedResize, 300);
+        });
+
+        // Use ResizeObserver on game arena for continuous real-time responsive adaptation
+        const arena = this.canvas.closest(".game-arena");
+        if (arena && typeof ResizeObserver !== "undefined") {
+            this._resizeObserver = new ResizeObserver(() => {
+                debouncedResize();
+            });
+            this._resizeObserver.observe(arena);
+        }
+
+        this.resize();
+        setTimeout(() => this.resize(), 50);
+        setTimeout(() => this.resize(), 200);
     }
 
     _setupInteraction() {
@@ -397,7 +472,7 @@ class LudoBoard {
         }
 
         let found = null;
-        const hitRadius = this.boardType > 4 ? 22 : this.cellSize * 0.48;
+        const hitRadius = this.boardType > 4 ? 24 : Math.max(24, this.cellSize * 0.50);
 
         for (const tokenId of this.validMoves) {
             const token = movingPlayer.tokens[tokenId];
@@ -429,7 +504,7 @@ class LudoBoard {
             movingPlayer = this.gameState.players.find(p => p.color === partnerColor) || currPlayer;
         }
 
-        const hitRadius = this.boardType > 4 ? 24 : this.cellSize * 0.52;
+        const hitRadius = this.boardType > 4 ? 27 : Math.max(27, this.cellSize * 0.55);
 
         for (const tokenId of this.validMoves) {
             const token = movingPlayer.tokens[tokenId];
@@ -981,6 +1056,9 @@ class LudoBoard {
 
     // --- Master Board Drawing Router ---
     _drawBoard(time) {
+        if (this.scale) {
+            this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+        }
         if (this.boardType === 6) {
             this._drawBoard6(time);
         } else if (this.boardType === 8) {

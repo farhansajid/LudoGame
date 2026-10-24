@@ -29,22 +29,37 @@ body {
     background: var(--bg-gradient);
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
 /* App Header */
 .app-header {
-    height: 60px;
-    padding: 0 24px;
+    height: 54px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(13, 17, 26, 0.8);
+    background: rgba(13, 17, 26, 0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--panel-border);
     z-index: 100;
+    flex-shrink: 0;
 }
 
 .brand-wrap {
@@ -108,6 +123,8 @@ body {
     display: none;
     flex: 1;
     width: 100%;
+    min-height: 0;
+    min-width: 0;
 }
 
 .screen.active {
@@ -118,8 +135,10 @@ body {
 #screen-home {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 32px 16px;
+    justify-content: flex-start;
+    padding: 24px 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .home-container {
@@ -206,8 +225,10 @@ body {
 #screen-lobby {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 30px;
+    justify-content: flex-start;
+    padding: 24px 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .lobby-container {
@@ -349,9 +370,14 @@ body {
 /* --- GAME SCREEN --- */
 #screen-game {
     flex-direction: column;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 54px);
+    height: calc(100dvh - 54px);
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
     overflow: hidden;
     position: relative;
+    width: 100%;
 }
 
 .game-layout {
@@ -359,61 +385,70 @@ body {
     flex: 1;
     overflow: hidden;
     position: relative;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    align-items: stretch;
+    justify-content: center;
 }
 
 /* HUD Player Sidebars */
 .game-sidebar {
-    width: 220px;
-    padding: 12px 14px;
+    width: clamp(140px, 14vw, 195px);
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     z-index: 10;
     max-height: 100%;
     overflow-y: auto;
+    flex-shrink: 0;
+    scrollbar-width: thin;
 }
 
 .player-hud-card {
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
     backdrop-filter: blur(12px);
-    border-radius: 14px;
-    padding: 10px 12px;
+    border-radius: 12px;
+    padding: 7px 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     position: relative;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    min-width: 0;
 }
 
 .player-hud-card.active-turn {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.65);
     border-color: var(--accent-gold);
 }
 
-.player-hud-card.color-red { border-left: 6px solid #d32f2f; }
-.player-hud-card.color-green { border-left: 6px solid #2e7d32; }
-.player-hud-card.color-yellow { border-left: 6px solid #f9a825; }
-.player-hud-card.color-blue { border-left: 6px solid #1976d2; }
-.player-hud-card.color-orange { border-left: 6px solid #e65100; }
-.player-hud-card.color-purple { border-left: 6px solid #6a1b9a; }
-.player-hud-card.color-cyan { border-left: 6px solid #00838f; }
-.player-hud-card.color-pink { border-left: 6px solid #ad1457; }
+.player-hud-card.color-red { border-left: 5px solid #d32f2f; }
+.player-hud-card.color-green { border-left: 5px solid #2e7d32; }
+.player-hud-card.color-yellow { border-left: 5px solid #f9a825; }
+.player-hud-card.color-blue { border-left: 5px solid #1976d2; }
+.player-hud-card.color-orange { border-left: 5px solid #e65100; }
+.player-hud-card.color-purple { border-left: 5px solid #6a1b9a; }
+.player-hud-card.color-cyan { border-left: 5px solid #00838f; }
+.player-hud-card.color-pink { border-left: 5px solid #ad1457; }
 
 .hud-avatar-wrap {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 20px;
     position: relative;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .hud-avatar-wrap.speaking {
@@ -427,11 +462,13 @@ body {
 
 .hud-info {
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .hud-name {
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -444,7 +481,8 @@ body {
 }
 
 .hud-mic-indicator {
-    font-size: 14px;
+    font-size: 13px;
+    flex-shrink: 0;
 }
 
 /* Center Board Arena */
@@ -455,29 +493,36 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 10px;
+    padding: 6px;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
 .turn-banner {
     position: absolute;
-    top: 50%;
+    top: 10px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 14px 30px;
-    border-radius: 26px;
-    font-weight: 800;
-    font-size: 16px;
-    background: rgba(13, 17, 26, 0.94);
-    border: 2px solid var(--panel-border);
-    backdrop-filter: blur(16px);
+    transform: translateX(-50%);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    background: rgba(13, 17, 26, 0.90);
+    border: 1.5px solid var(--panel-border);
+    backdrop-filter: blur(14px);
     z-index: 40;
-    box-shadow: 0 8px 36px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 90%;
+    white-space: nowrap;
 }
 
 .turn-banner.my-turn-pulse {
@@ -485,18 +530,18 @@ body {
 }
 
 @keyframes center-turn-glow {
-    0% { transform: translate(-50%, -50%) scale(1.0); box-shadow: 0 8px 28px rgba(255, 215, 0, 0.4); }
-    100% { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 12px 42px rgba(255, 215, 0, 0.8); }
+    0% { transform: translateX(-50%) scale(1.0); box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4); }
+    100% { transform: translateX(-50%) scale(1.04); box-shadow: 0 6px 24px rgba(255, 215, 0, 0.8); }
 }
 
 .turn-center-content {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .turn-icon {
-    font-size: 22px;
+    font-size: 18px;
 }
 
 .turn-banner.color-red { color: #ff5252; border-color: #ff5252; }
@@ -508,49 +553,56 @@ body {
 .turn-banner.color-cyan { color: #18ffff; border-color: #18ffff; }
 .turn-banner.color-pink { color: #ff4081; border-color: #ff4081; }
 
-/* Increased Board Canvas Size (HD Experience) */
+/* Dynamically Maximized Board Canvas Container */
 .canvas-container {
-    width: min(88vh, calc(100vw - 360px), 820px);
-    height: min(88vh, calc(100vw - 360px), 820px);
     position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-    border-radius: 20px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
+    border-radius: 18px;
     overflow: hidden;
-    transition: width 0.3s ease, height 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    max-height: 100%;
+    width: min(calc(100vw - 320px), calc(100dvh - 130px));
+    height: min(calc(100vw - 320px), calc(100dvh - 130px));
+    transition: width 0.2s ease, height 0.2s ease;
 }
 
 .canvas-container.size-standard {
-    width: min(78vh, calc(100vw - 360px), 680px);
-    height: min(78vh, calc(100vw - 360px), 680px);
+    max-width: 86%;
+    max-height: 86%;
 }
 
 .canvas-container.size-large {
-    width: min(88vh, calc(100vw - 360px), 820px);
-    height: min(88vh, calc(100vw - 360px), 820px);
+    max-width: 95%;
+    max-height: 95%;
 }
 
 .canvas-container.size-xlarge {
-    width: min(94vh, calc(100vw - 340px), 920px);
-    height: min(94vh, calc(100vw - 340px), 920px);
+    max-width: 99%;
+    max-height: 99%;
 }
 
 #ludo-canvas {
     width: 100%;
     height: 100%;
     display: block;
+    touch-action: none;
 }
 
 /* Left Corner Game Updates Container */
 .game-updates-corner {
     position: absolute;
-    left: 18px;
-    bottom: 84px;
-    width: 270px;
-    max-height: 220px;
+    left: 12px;
+    bottom: 12px;
+    width: min(250px, 32vw);
+    max-height: min(180px, 28vh);
     background: rgba(13, 17, 26, 0.90);
     border: 1px solid var(--panel-border);
     backdrop-filter: blur(14px);
-    border-radius: 14px;
+    border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
     z-index: 35;
     display: flex;
@@ -812,15 +864,16 @@ body {
 
 /* Center Bottom Dice & Action Controls */
 .game-bottom-bar {
-    height: 72px;
-    background: rgba(13, 17, 26, 0.9);
+    height: 60px;
+    background: rgba(13, 17, 26, 0.92);
     border-top: 1px solid var(--panel-border);
     backdrop-filter: blur(14px);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 16px;
     z-index: 50;
+    flex-shrink: 0;
 }
 
 .audio-toolbar {
@@ -1412,34 +1465,315 @@ body {
     color: #f1f5f9;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .game-layout {
-        flex-direction: column;
-        align-items: center;
+/* --- COMPREHENSIVE RESPONSIVE VIEWPORT ADAPTATION --- */
+
+/* 1. Laptops and Compact Desktop Screens (<= 1100px) */
+@media (max-width: 1100px) {
+    .game-sidebar {
+        width: 165px;
+        padding: 6px 8px;
         gap: 6px;
     }
+    .player-hud-card {
+        padding: 6px 8px;
+    }
+    .hud-avatar-wrap {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+    .hud-name {
+        font-size: 12px;
+        max-width: 75px;
+    }
+}
+
+/* 2. Mobile Portrait and Tablet Portrait (<= 860px in portrait, or <= 768px) */
+@media (max-width: 860px) and (orientation: portrait), (max-width: 768px) {
+    .app-header {
+        height: 48px;
+        padding: 0 12px;
+    }
+    .brand-icon {
+        font-size: 22px;
+    }
+    .brand-title {
+        font-size: 17px;
+    }
+    .brand-tag {
+        display: none;
+    }
+    .voice-status-badge {
+        font-size: 11px;
+    }
+
+    #screen-game {
+        height: calc(100vh - 48px);
+        height: calc(100dvh - 48px);
+    }
+
+    .game-layout {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 3px;
+        padding: 2px 4px;
+    }
+
+    /* Player sidebars become slim horizontal strips above and below board */
     .game-sidebar {
         flex-direction: row;
         width: 100%;
-        max-width: 440px;
-        justify-content: space-around;
-        gap: 8px;
+        max-width: 100%;
+        justify-content: center;
+        padding: 2px 4px;
+        gap: 5px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        height: auto;
+        max-height: 42px;
+        scrollbar-width: none;
     }
+    .game-sidebar::-webkit-scrollbar {
+        display: none;
+    }
+
     .player-hud-card {
-        padding: 6px 10px;
-        min-width: 120px;
+        flex: 1 1 0;
+        min-width: 75px;
+        max-width: 175px;
+        padding: 3px 6px;
+        gap: 5px;
+        border-radius: 8px;
+        border-left-width: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
+
+    .hud-avatar-wrap {
+        width: 26px;
+        height: 26px;
+        font-size: 15px;
+    }
+
+    .hud-name {
+        font-size: 11px;
+        max-width: 55px;
+    }
+
+    .hud-goal-counter {
+        font-size: 9px;
+    }
+
+    .hud-mini-die {
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+    }
+
+    .btn-private-call {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+
     .game-arena {
         padding: 2px;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        min-width: 0;
     }
+
+    /* Canvas dynamically expands to fill available portrait width */
     .canvas-container {
-        width: min(94vw, 420px);
-        height: min(94vw, 420px);
+        width: min(calc(100vw - 8px), calc(100dvh - 156px));
+        height: min(calc(100vw - 8px), calc(100dvh - 156px));
+        border-radius: 14px;
     }
+
+    .turn-banner {
+        top: 6px;
+        padding: 3px 14px;
+        font-size: 11px;
+    }
+
+    .turn-icon {
+        font-size: 14px;
+    }
+
+    .game-bottom-bar {
+        height: 52px;
+        padding: 0 8px;
+        gap: 6px;
+    }
+
+    .voice-btn {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .reaction-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .chat-input-wrap {
+        max-width: 110px;
+    }
+
+    .chat-input-wrap input {
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+
     .chat-messages-container {
-        max-height: 90px;
-        max-width: 200px;
+        max-height: 75px;
+        max-width: 170px;
+        bottom: 6px;
+        left: 6px;
+        font-size: 10px;
+    }
+
+    .game-updates-corner {
+        max-width: 190px;
+        max-height: 110px;
+        left: 6px;
+        bottom: 6px;
+        font-size: 10px;
+    }
+}
+
+/* 3. Mobile Landscape Viewports (height <= 520px and landscape) */
+@media (max-height: 520px) and (orientation: landscape) {
+    .app-header {
+        height: 38px;
+        padding: 0 10px;
+    }
+    .brand-icon {
+        font-size: 18px;
+    }
+    .brand-title {
+        font-size: 15px;
+    }
+    .brand-tag {
+        display: none;
+    }
+    .voice-status-badge {
+        font-size: 10px;
+    }
+
+    #screen-game {
+        height: calc(100vh - 38px);
+        height: calc(100dvh - 38px);
+    }
+
+    .game-layout {
+        flex-direction: row;
+        gap: 4px;
+        padding: 1px 4px;
+    }
+
+    .game-sidebar {
+        width: 115px;
+        padding: 3px;
+        gap: 4px;
+        overflow-y: auto;
+    }
+
+    .player-hud-card {
+        padding: 2px 5px;
+        gap: 4px;
+        border-radius: 6px;
+        border-left-width: 3px;
+    }
+
+    .hud-avatar-wrap {
+        width: 22px;
+        height: 22px;
+        font-size: 13px;
+    }
+
+    .hud-name {
+        font-size: 10px;
+        max-width: 45px;
+    }
+
+    .hud-goal-counter {
+        font-size: 8px;
+    }
+
+    .hud-mini-die {
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+    }
+
+    .btn-private-call {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+    }
+
+    .game-arena {
+        padding: 1px;
+    }
+
+    /* Canvas dynamically expands to fill available landscape height */
+    .canvas-container {
+        width: min(calc(100vw - 250px), calc(100dvh - 88px));
+        height: min(calc(100vw - 250px), calc(100dvh - 88px));
+        border-radius: 12px;
+    }
+
+    .turn-banner {
+        top: 4px;
+        padding: 2px 10px;
+        font-size: 10px;
+    }
+
+    .turn-icon {
+        font-size: 12px;
+    }
+
+    .game-bottom-bar {
+        height: 44px;
+        padding: 0 8px;
+    }
+
+    .dice-wrapper {
+        transform: scale(0.82);
+    }
+
+    .reaction-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+    }
+
+    .voice-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+
+    .chat-input-wrap {
+        max-width: 95px;
+    }
+
+    .game-updates-corner {
+        max-width: 150px;
+        max-height: 85px;
+        left: 4px;
+        bottom: 4px;
+        font-size: 9px;
+    }
+
+    .chat-messages-container {
+        max-height: 60px;
+        max-width: 140px;
+        bottom: 4px;
+        left: 4px;
+        font-size: 9px;
     }
 }
 
